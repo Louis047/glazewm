@@ -9,6 +9,8 @@ pub enum WorkspaceTarget {
   PreviousActiveInMonitor,
   Next,
   Previous,
+  NextPopulated,
+  PreviousPopulated,
   #[allow(dead_code)]
   Direction(Direction),
 }

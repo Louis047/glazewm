@@ -361,6 +361,12 @@ pub struct InvokeFocusCommand {
 
   #[clap(long)]
   pub recent_workspace: bool,
+
+  #[clap(long)]
+  pub next_populated_workspace: bool,
+
+  #[clap(long)]
+  pub prev_populated_workspace: bool,
 }
 
 #[derive(Args, Clone, Debug, PartialEq, Serialize)]
@@ -399,6 +405,12 @@ pub struct InvokeMoveCommand {
 
   #[clap(long)]
   pub recent_workspace: bool,
+
+  #[clap(long)]
+  pub next_populated_workspace: bool,
+
+  #[clap(long)]
+  pub prev_populated_workspace: bool,
 }
 
 #[derive(Args, Clone, Debug, PartialEq, Serialize)]

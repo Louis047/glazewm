@@ -472,6 +472,102 @@ impl WmState {
         (previous_workspace_name, previous_workspace)
       }
 
+      WorkspaceTarget::NextPopulated => {
+        let all_sorted = self.sorted_workspaces(config);
+        let populated: Vec<_> = all_sorted
+          .iter()
+          .filter(|w| w.has_children())
+          .cloned()
+          .collect();
+
+        let next = if populated.is_empty() {
+          None
+        } else {
+          match populated
+            .iter()
+            .position(|w| w.id() == origin_workspace.id())
+          {
+            Some(i) => populated
+              .get(i + 1)
+              .or_else(|| populated.first())
+              .cloned(),
+            None => {
+              // Origin is empty; find its position in the full
+              // sorted list and pick the next populated workspace.
+              let origin_pos = all_sorted
+                .iter()
+                .position(|w| w.id() == origin_workspace.id())
+                .unwrap_or(0);
+              populated
+                .iter()
+                .find(|w| {
+                  all_sorted
+                    .iter()
+                    .position(|s| s.id() == w.id())
+                    .unwrap_or(0)
+                    > origin_pos
+                })
+                .or_else(|| populated.first())
+                .cloned()
+            }
+          }
+        };
+
+        (
+          next.as_ref().map(|w| w.config().name),
+          next,
+        )
+      }
+      WorkspaceTarget::PreviousPopulated => {
+        let all_sorted = self.sorted_workspaces(config);
+        let populated: Vec<_> = all_sorted
+          .iter()
+          .filter(|w| w.has_children())
+          .cloned()
+          .collect();
+
+        let prev = if populated.is_empty() {
+          None
+        } else {
+          match populated
+            .iter()
+            .position(|w| w.id() == origin_workspace.id())
+          {
+            Some(i) => populated
+              .get(
+                i.checked_sub(1)
+                  .unwrap_or(populated.len() - 1),
+              )
+              .cloned(),
+            None => {
+              // Origin is empty; find its position in the full
+              // sorted list and pick the previous populated workspace.
+              let origin_pos = all_sorted
+                .iter()
+                .position(|w| w.id() == origin_workspace.id())
+                .unwrap_or(0);
+              populated
+                .iter()
+                .rev()
+                .find(|w| {
+                  all_sorted
+                    .iter()
+                    .position(|s| s.id() == w.id())
+                    .unwrap_or(0)
+                    < origin_pos
+                })
+                .or_else(|| populated.last())
+                .cloned()
+            }
+          }
+        };
+
+        (
+          prev.as_ref().map(|w| w.config().name),
+          prev,
+        )
+      }
+
       WorkspaceTarget::Direction(direction) => {
         let origin_monitor =
           origin_workspace.monitor().context("No focused monitor.")?;

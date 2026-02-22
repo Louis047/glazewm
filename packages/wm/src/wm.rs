@@ -317,6 +317,22 @@ impl WindowManager {
           )?;
         }
 
+        if args.next_populated_workspace {
+          focus_workspace(
+            WorkspaceTarget::NextPopulated,
+            state,
+            config,
+          )?;
+        }
+
+        if args.prev_populated_workspace {
+          focus_workspace(
+            WorkspaceTarget::PreviousPopulated,
+            state,
+            config,
+          )?;
+        }
+
         Ok(())
       }
       InvokeCommand::Ignore => {
@@ -411,8 +427,26 @@ impl WindowManager {
 
             if args.prev_active_workspace_on_monitor {
               move_window_to_workspace(
-                window,
+                window.clone(),
                 WorkspaceTarget::PreviousActiveInMonitor,
+                state,
+                config,
+              )?;
+            }
+
+            if args.next_populated_workspace {
+              move_window_to_workspace(
+                window.clone(),
+                WorkspaceTarget::NextPopulated,
+                state,
+                config,
+              )?;
+            }
+
+            if args.prev_populated_workspace {
+              move_window_to_workspace(
+                window,
+                WorkspaceTarget::PreviousPopulated,
                 state,
                 config,
               )?;
